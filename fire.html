@@ -1,0 +1,48 @@
+<html>
+<body>
+    <input type="text" id="in" onkeypress="return saveToList(event)" />
+    <ol id="newl">
+    </ol>
+  
+    <script type='text/javascript' src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script>
+		<script type="text/javascript">
+			var newl=new Firebase('https://kuroko-5a436.firebaseio.com/movies');
+			function saveToList(event){
+    		if(event.keyCode==13){
+        	var input=document.getElementById('in').value.trim();
+        	if(input.length>0)
+            save(input);
+        	document.getElementById('in').value='';
+        	return false;
+    		}
+			};
+
+			function save(input){
+    		newl.push({ name: input });
+			};
+
+			function refreshUI(list){
+    		var lis='';
+    		for(var i=0;i<list.length;i++)
+        	lis += '<li data-key="' + list[i].key + '">' + list[i].name + '</li>';
+    		document.getElementById('newl').innerHTML = lis;
+			};
+
+			newl.on("value",function(snapshot){
+    		var data=snapshot.val();
+    		var list=[];
+    		for(var key in data){
+        	if(data.hasOwnProperty(key)){
+            name=data[key].name ? data[key].name : '';
+            if(name.trim().length > 0){
+                list.push({
+                    name: name,
+                    key: key
+                })
+            }
+        	}
+    		}
+    		refreshUI(list);
+			});
+
+</script></body></html>
